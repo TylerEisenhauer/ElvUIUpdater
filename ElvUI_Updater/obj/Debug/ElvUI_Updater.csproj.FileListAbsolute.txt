@@ -1,0 +1,1 @@
+C:\Source\ElvUIUpdater\ElvUI_Updater\bin\Debug\ElvUI_Updater.exe.config
