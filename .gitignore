@@ -2,8 +2,8 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/packages/HtmlAgilityPack.1.4.9.5
-/.vs/ElvUI_Updater/v14
+/packages/
+/.vs/
 /ElvUI_Updater/bin/
 /ElvUI_Updater/obj/
 /ElvUI_Updater/ElvUI_Updater.csproj.user
