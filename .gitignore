@@ -4,8 +4,6 @@
 
 /packages/HtmlAgilityPack.1.4.9.5
 /.vs/ElvUI_Updater/v14
-/ElvUI_Updater/bin/Debug
-/ElvUI_Updater/obj/Debug/ElvUI_Updater.exe
-/ElvUI_Updater/obj/Debug/ElvUI_Updater.pdb
-/ElvUI_Updater/obj/Debug
+/ElvUI_Updater/bin/
+/ElvUI_Updater/obj/
 /ElvUI_Updater/ElvUI_Updater.csproj.user
