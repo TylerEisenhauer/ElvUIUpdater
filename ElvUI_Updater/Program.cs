@@ -18,17 +18,6 @@ namespace ElvUI_Updater
 
             try
             {
-                Console.WriteLine("Downloading HTML Document");
-                doc = WebHelper.GetHTMLDocument("http://www.tukui.org/dl.php");
-
-                Console.WriteLine("Determining Version");
-                version = WebHelper.GetElvUIVersion(doc);
-
-                Console.WriteLine("Downloading File");
-                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/downloads/elvui-" + version + ".zip");
-
-                File.WriteAllBytes(@"C:\temp.zip", b);
-
                 Console.WriteLine("Searching for World of Warcraft Installation");
                 directory = FileSystemHelper.LocateWorldOfWarcraftInstallation();
 
@@ -39,9 +28,19 @@ namespace ElvUI_Updater
                     return;
                 }
 
+                Console.WriteLine("Downloading HTML Document");
+                doc = WebHelper.GetHTMLDocument("http://www.tukui.org/dl.php");
+
+                Console.WriteLine("Determining Version");
+                version = WebHelper.GetElvUIVersion(doc);
+
+                Console.WriteLine("Downloading File");
+                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/downloads/elvui-" + version + ".zip");
+
+                File.WriteAllBytes(@"C:\temp.zip", b);
                 Console.WriteLine("Copying Files");
                 ZipFile.ExtractToDirectory("C:/temp.zip", "c:/tempelvuifile");
-
+                
                 FileSystemHelper.DirectoryCopy("C:/tempelvuifile/ElvUI", directory + "/ElvUI");
                 FileSystemHelper.DirectoryCopy("C:/tempelvuifile/ElvUI_Config", directory + "/ElvUI_Config");
 
