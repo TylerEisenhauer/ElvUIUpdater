@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Compression;
 using HtmlAgilityPack;
-using ElvUI_Updater.Interfaces;
 
 namespace ElvUI_Updater
 {
@@ -10,11 +9,10 @@ namespace ElvUI_Updater
     {
         static void Main(string[] args)
         {
-            Factory factory = new Factory();
-            IWebHelper WebHelper = factory.GetWebHelper();
-            IFileSystemHelper FileSystemHelper = factory.GetFileSystemHelper();
+            WebHelper WebHelper = new WebHelper();
+            FileSystemHelper FileSystemHelper = new FileSystemHelper();
             HtmlDocument doc;
-            string version, directory;
+            string downloadLink, directory;
 
             try
             {
@@ -29,13 +27,13 @@ namespace ElvUI_Updater
                 }
 
                 Console.WriteLine("Downloading HTML Document");
-                doc = WebHelper.GetHTMLDocument("http://www.tukui.org/dl.php");
+                doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
 
                 Console.WriteLine("Determining Version");
-                version = WebHelper.GetElvUIVersion(doc);
+                downloadLink = WebHelper.GetDownloadLink(doc);
 
                 Console.WriteLine("Downloading File");
-                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/downloads/elvui-" + version + ".zip");
+                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
 
                 File.WriteAllBytes(@"C:\temp.zip", b);
                 Console.WriteLine("Copying Files");
