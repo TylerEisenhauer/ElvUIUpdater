@@ -1,7 +1,7 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.IO;
 using System.IO.Compression;
-using HtmlAgilityPack;
 
 namespace ElvUI_Updater
 {
@@ -35,12 +35,23 @@ namespace ElvUI_Updater
                 Console.WriteLine("Downloading File");
                 byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
 
-                File.WriteAllBytes(@"C:\temp.zip", b);
-                Console.WriteLine("Copying Files");
-                ZipFile.ExtractToDirectory("C:/temp.zip", "c:/tempelvuifile");
-                
-                FileSystemHelper.DirectoryCopy("C:/tempelvuifile/ElvUI", directory + "/ElvUI");
-                FileSystemHelper.DirectoryCopy("C:/tempelvuifile/ElvUI_Config", directory + "/ElvUI_Config");
+                Console.WriteLine("Updating Local Files");
+                MemoryStream stream = new MemoryStream(b);
+                using (ZipArchive archive = new ZipArchive(stream))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        if (string.IsNullOrWhiteSpace(entry.Name))
+                        {
+                            //Required incase the user does not already have an ElvUI directory
+                            Directory.CreateDirectory(Path.Combine(directory, entry.FullName));
+                        }
+                        else
+                        {
+                            entry.ExtractToFile(Path.Combine(directory, entry.FullName), true);
+                        }
+                    }
+                }
 
                 Console.WriteLine("Success! Press any key to exit.");
                 Console.ReadKey();
@@ -51,11 +62,6 @@ namespace ElvUI_Updater
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine("Please give this to the developer.");
                 Console.ReadKey();
-            }
-            finally
-            {
-                File.Delete(@"C:\temp.zip");
-                Directory.Delete(@"C:\tempelvuifile", true);
             }
         }
     }
