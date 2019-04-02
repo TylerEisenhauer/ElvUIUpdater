@@ -4,38 +4,6 @@ namespace ElvUI_Updater
 {
     public class FileSystemHelper
     {
-        public void DirectoryCopy(string source, string destination)
-        {
-            DirectoryInfo dir = new DirectoryInfo(source);
-
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + source);
-            }
-
-            DirectoryInfo[] dirs = dir.GetDirectories();
-            if (!Directory.Exists(destination))
-            {
-                Directory.CreateDirectory(destination);
-            }
-
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                string temppath = Path.Combine(destination, file.Name);
-                file.CopyTo(temppath, true);
-            }
-
-
-            foreach (DirectoryInfo subdir in dirs)
-            {
-                string temppath = Path.Combine(destination, subdir.Name);
-                DirectoryCopy(subdir.FullName, temppath);
-            }
-        }
-
         public string LocateWorldOfWarcraftInstallation()
         {
             string directory = "";
