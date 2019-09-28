@@ -1,7 +1,5 @@
 ﻿using HtmlAgilityPack;
 using System;
-using System.IO;
-using System.IO.Compression;
 
 namespace ElvUI_Updater
 {
@@ -17,40 +15,43 @@ namespace ElvUI_Updater
             try
             {
                 Console.WriteLine("Searching for World of Warcraft Installation");
-                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation();
+                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._retail_);
 
                 if (string.IsNullOrEmpty(directory))
                 {
-                    Console.WriteLine("World of Warcraft Installation not found, press any key to exit.");
-                    Console.ReadKey();
-                    return;
+                    Console.WriteLine("World of Warcraft Installation not found, skipping.");
+                }
+                else
+                {
+                    Console.WriteLine("Downloading HTML Document");
+                    doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
+
+                    Console.WriteLine("Determining Version");
+                    downloadLink = WebHelper.GetDownloadLink(doc);
+
+                    Console.WriteLine("Downloading File");
+                    byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
+
+                    Console.WriteLine("Updating Local Files");
+                    FileSystemHelper.ExtractZipFile(b, directory);
                 }
 
-                Console.WriteLine("Downloading HTML Document");
-                doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
+                directory = string.Empty;
 
-                Console.WriteLine("Determining Version");
-                downloadLink = WebHelper.GetDownloadLink(doc);
+                Console.WriteLine("Searching for World of Warcraft Classic Installation");
+                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_);
 
-                Console.WriteLine("Downloading File");
-                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
-
-                Console.WriteLine("Updating Local Files");
-                MemoryStream stream = new MemoryStream(b);
-                using (ZipArchive archive = new ZipArchive(stream))
+                if (string.IsNullOrEmpty(directory))
                 {
-                    foreach (ZipArchiveEntry entry in archive.Entries)
-                    {
-                        if (string.IsNullOrWhiteSpace(entry.Name))
-                        {
-                            //Required incase the user does not already have an ElvUI directory
-                            Directory.CreateDirectory(Path.Combine(directory, entry.FullName));
-                        }
-                        else
-                        {
-                            entry.ExtractToFile(Path.Combine(directory, entry.FullName), true);
-                        }
-                    }
+                    Console.WriteLine("World of Warcraft Classic Installation not found, skipping.");
+                }
+                else
+                {
+                    Console.WriteLine("Downloading File");
+                    byte[] b = WebHelper.DownloadFile("http://www.tukui.org/classic-addons.php?download=2");
+
+                    Console.WriteLine("Updating Local Files");
+                    FileSystemHelper.ExtractZipFile(b, directory);
                 }
 
                 Console.WriteLine("Success! Press any key to exit.");
