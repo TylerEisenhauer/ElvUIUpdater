@@ -39,7 +39,7 @@ namespace ElvUI_Updater
                 directory = string.Empty;
 
                 Console.WriteLine("Searching for World of Warcraft Classic Installation");
-                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_);
+                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_era_);
 
                 if (string.IsNullOrEmpty(directory))
                 {
@@ -49,6 +49,22 @@ namespace ElvUI_Updater
                 {
                     Console.WriteLine("Downloading File");
                     byte[] b = WebHelper.DownloadFile("http://www.tukui.org/classic-addons.php?download=2");
+
+                    Console.WriteLine("Updating Local Files");
+                    FileSystemHelper.ExtractZipFile(b, directory);
+                }
+
+                Console.WriteLine("Searching for World of Warcraft Burning Crusade Classic Installation");
+                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_);
+
+                if (string.IsNullOrEmpty(directory))
+                {
+                    Console.WriteLine("World of Warcraft Burning Crusade Classic Installation not found, skipping.");
+                }
+                else
+                {
+                    Console.WriteLine("Downloading File");
+                    byte[] b = WebHelper.DownloadFile("https://www.tukui.org/classic-tbc-addons.php?download=2");
 
                     Console.WriteLine("Updating Local Files");
                     FileSystemHelper.ExtractZipFile(b, directory);

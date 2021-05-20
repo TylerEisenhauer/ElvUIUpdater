@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace ElvUI_Updater
 {
@@ -29,12 +30,15 @@ namespace ElvUI_Updater
             MemoryStream stream = new MemoryStream(zipFile);
             using (ZipArchive archive = new ZipArchive(stream))
             {
+                //Create the directories
+                archive.Entries.Where(x => string.IsNullOrWhiteSpace(x.Name)).ToList().ForEach(x => Directory.CreateDirectory(Path.Combine(directory, x.FullName)));
+
                 foreach (ZipArchiveEntry entry in archive.Entries)
                 {
                     if (string.IsNullOrWhiteSpace(entry.Name))
                     {
-                        //Required incase the user does not already have an ElvUI directory
-                        Directory.CreateDirectory(Path.Combine(directory, entry.FullName));
+                        //This skips past folders that were created above
+                        continue;
                     }
                     else
                     {

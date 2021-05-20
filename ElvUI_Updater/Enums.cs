@@ -3,6 +3,7 @@
     public enum GameVersion
     {
         _retail_,
-        _classic_
+        _classic_,
+        _classic_era_
     }
 }
