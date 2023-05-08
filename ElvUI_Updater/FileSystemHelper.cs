@@ -4,28 +4,25 @@ using System.Linq;
 
 namespace ElvUI_Updater
 {
-    public class FileSystemHelper
+    public static class FileSystemHelper
     {
-        public string LocateWorldOfWarcraftInstallation(GameVersion version)
+        public static string LocateWorldOfWarcraftInstallation(GameVersion version)
         {
-            string directory = string.Empty;
-
             DriveInfo[] drives = DriveInfo.GetDrives();
             foreach (DriveInfo drive in drives)
             {
-
-                directory = $"{drive.Name}Program Files (x86)/World of Warcraft/{version.ToString("g")}/Interface/AddOns";
+                string directory = $"{drive.Name}Program Files (x86)/World of Warcraft/{version:g}/Interface/AddOns";
                 bool found = Directory.Exists(directory);
-                if (found) { break; }
-                directory = $"{drive.Name}World of Warcraft/{version.ToString("g")}/Interface/AddOns";
+                if (found) { return directory; }
+                directory = $"{drive.Name}World of Warcraft/{version:g}/Interface/AddOns";
                 found = Directory.Exists(directory);
-                if (found) { break; }
+                if (found) { return directory; }
             }
 
-            return directory;
+            return string.Empty;
         }
 
-        public void ExtractZipFile(byte[] zipFile, string directory)
+        public static void ExtractZipFile(byte[] zipFile, string directory)
         {
             MemoryStream stream = new MemoryStream(zipFile);
             using (ZipArchive archive = new ZipArchive(stream))

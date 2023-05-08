@@ -8,66 +8,32 @@ namespace ElvUI_Updater
         static void Main(string[] args)
         {
             WebHelper WebHelper = new WebHelper();
-            FileSystemHelper FileSystemHelper = new FileSystemHelper();
-            HtmlDocument doc;
-            string downloadLink, directory;
 
             try
             {
-                Console.WriteLine("Searching for World of Warcraft Installation");
-                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._retail_);
+                Console.WriteLine("Downloading HTML Document");
+                HtmlDocument doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
 
-                if (string.IsNullOrEmpty(directory))
+                Console.WriteLine("Determining Version");
+                string downloadLink = WebHelper.GetDownloadLink(doc);
+
+                Console.WriteLine("Downloading File");
+                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
+
+                foreach (var item in (GameVersion[])Enum.GetValues(typeof(GameVersion)))
                 {
-                    Console.WriteLine("World of Warcraft Installation not found, skipping.");
-                }
-                else
-                {
-                    Console.WriteLine("Downloading HTML Document");
-                    doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
+                    Console.WriteLine($"Searching for World of Warcraft {item} Installation");
+                    string directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(item);
 
-                    Console.WriteLine("Determining Version");
-                    downloadLink = WebHelper.GetDownloadLink(doc);
-
-                    Console.WriteLine("Downloading File");
-                    byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
-
-                    Console.WriteLine("Updating Local Files");
-                    FileSystemHelper.ExtractZipFile(b, directory);
-                }
-
-                directory = string.Empty;
-
-                Console.WriteLine("Searching for World of Warcraft Classic Installation");
-                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_era_);
-
-                if (string.IsNullOrEmpty(directory))
-                {
-                    Console.WriteLine("World of Warcraft Classic Installation not found, skipping.");
-                }
-                else
-                {
-                    Console.WriteLine("Downloading File");
-                    byte[] b = WebHelper.DownloadFile("http://www.tukui.org/classic-addons.php?download=2");
-
-                    Console.WriteLine("Updating Local Files");
-                    FileSystemHelper.ExtractZipFile(b, directory);
-                }
-
-                Console.WriteLine("Searching for World of Warcraft Burning Crusade Classic Installation");
-                directory = FileSystemHelper.LocateWorldOfWarcraftInstallation(GameVersion._classic_);
-
-                if (string.IsNullOrEmpty(directory))
-                {
-                    Console.WriteLine("World of Warcraft Burning Crusade Classic Installation not found, skipping.");
-                }
-                else
-                {
-                    Console.WriteLine("Downloading File");
-                    byte[] b = WebHelper.DownloadFile("https://www.tukui.org/classic-tbc-addons.php?download=2");
-
-                    Console.WriteLine("Updating Local Files");
-                    FileSystemHelper.ExtractZipFile(b, directory);
+                    if (string.IsNullOrEmpty(directory))
+                    {
+                        Console.WriteLine($"World of Warcraft {item} Installation not found, skipping.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Updating Local Files");
+                        FileSystemHelper.ExtractZipFile(b, directory);
+                    }
                 }
 
                 Console.WriteLine("Success! Press any key to exit.");
