@@ -1,4 +1,6 @@
-﻿using HtmlAgilityPack;
+﻿using ElvUI_Updater.ApiClients.ElvUI;
+using HtmlAgilityPack;
+using RestSharp;
 using System;
 
 namespace ElvUI_Updater
@@ -7,18 +9,16 @@ namespace ElvUI_Updater
     {
         static void Main(string[] args)
         {
+            ElvUIClient client = new ElvUIClient();
             WebHelper WebHelper = new WebHelper();
 
             try
             {
-                Console.WriteLine("Downloading HTML Document");
-                HtmlDocument doc = WebHelper.GetHTMLDocument("https://www.tukui.org/download.php?ui=elvui");
-
-                Console.WriteLine("Determining Version");
-                string downloadLink = WebHelper.GetDownloadLink(doc);
+                Console.WriteLine("Getting download link");
+                var data = client.GetAddonData("elvui");
 
                 Console.WriteLine("Downloading File");
-                byte[] b = WebHelper.DownloadFile("http://www.tukui.org/" + downloadLink);
+                byte[] b = WebHelper.DownloadFile(data.Url);
 
                 foreach (var item in (GameVersion[])Enum.GetValues(typeof(GameVersion)))
                 {
